@@ -158,7 +158,8 @@ namespace GCross
 
             _selectedIndex = GetHoveredCell();
             HandleClickedCells();
-            
+            _puzzle.UpdateSolvedClues();
+
             ScaleToFit(cr);
             DrawBackground(cr);
             DrawHighlight(cr);
@@ -273,31 +274,45 @@ namespace GCross
             cr.SetFontSize(20);
             
             // Column clues
-            for (int column = 0; column < _puzzle.Width; column++)
+            for (int cx = 0; cx < _puzzle.Width; cx++)
             {
-                int[] clues = _puzzle.ColumnClues[column];
-                int x = _puzzleStart.X + column * CellSize;
+                int[] clues = _puzzle.ColumnClues[cx];
+                ClueStatus[] cluesStatus = _puzzle.ColumnCluesStatus[cx];
+                int x = _puzzleStart.X + cx * CellSize;
                 for (int i = 0; i < clues.Length; i++)
                 {
                     string clue = clues[clues.Length - i - 1].ToString();
                     TextExtents te = cr.TextExtents(clue);
                     cr.MoveTo(x + (CellSize - te.Width) / 2.0 - te.XBearing,
                         _puzzleStart.Y - (CellSize * i) - (CellSize - te.Height) / 2.0);
+
+                    if (cluesStatus[clues.Length - i - 1] == ClueStatus.Unmarked)
+                        cr.SetSourceRGBA(0, 0, 0, 1);
+                    else
+                        cr.SetSourceRGBA(0.5, 0.5, 0.5, 1);
+                    
                     cr.ShowText(clue);
                 }
             }
             
             // Row clues
-            for (int row = 0; row < _puzzle.Height; row++)
+            for (int cy = 0; cy < _puzzle.Height; cy++)
             {
-                int[] clues = _puzzle.RowClues[row];
-                int y = _puzzleStart.Y + (row + 1) * CellSize;
+                int[] clues = _puzzle.RowClues[cy];
+                ClueStatus[] cluesStatus = _puzzle.RowCluesStatus[cy];
+                int y = _puzzleStart.Y + (cy + 1) * CellSize;
                 for (int i = 0; i < clues.Length; i++)
                 {
                     string clue = clues[clues.Length - i - 1].ToString();
                     TextExtents te = cr.TextExtents(clue);
                     cr.MoveTo(_puzzleStart.X - (CellSize * (i + 1)) + (CellSize - te.Width) / 2.0 - te.XBearing,
                         y - (CellSize - te.Height) / 2.0);
+                    
+                    if (cluesStatus[clues.Length - i - 1] == ClueStatus.Unmarked)
+                        cr.SetSourceRGBA(0, 0, 0, 1);
+                    else
+                        cr.SetSourceRGBA(0.5, 0.5, 0.5, 1);
+                    
                     cr.ShowText(clue);
                 }
             }
@@ -429,10 +444,13 @@ namespace GCross
         private void HandleClickedCells()
         {
             if (!_buttonPressed && !_buttonJustPressed) return;
+
+            int cx = _selectedIndex.X; // cell x
+            int cy = _selectedIndex.Y; // cell y
             
             CellStatus cellStatus = CellStatus.None;
-            if (_selectedIndex.X >= 0 && _selectedIndex.Y >= 0)
-                cellStatus = _puzzle.Grid[_selectedIndex.X, _selectedIndex.Y];
+            if (cx >= 0 && cy >= 0)
+                cellStatus = _puzzle.Grid[cx, cy];
             
             if (_buttonJustPressed)
             {
@@ -441,13 +459,33 @@ namespace GCross
                 // Make sure the player clicked inside the puzzle
                 if (_selectedIndex != (-1, -1))
                 {
-                    if (_selectedIndex.X < 0)
+                    if (cx < 0)
                     {
-                        // TODO: row clue clicked
+                        // Row clue clicked
+                        int clueIndex = cx + _puzzle.RowClues[cy].Length;
+                        if (clueIndex >= 0)
+                        {
+                            _puzzle.RowCluesStatus[cy][clueIndex] = _puzzle.RowCluesStatus[cy][clueIndex] switch
+                            {
+                                ClueStatus.Unmarked => ClueStatus.Marked,
+                                ClueStatus.Marked => ClueStatus.Unmarked,
+                                _ => _puzzle.RowCluesStatus[cy][clueIndex]
+                            };
+                        }
                     }
-                    else if (_selectedIndex.Y < 0)
+                    else if (cy < 0)
                     {
-                        // TODO: column clue clicked
+                        // Column clue clicked
+                        int clueIndex = cy + _puzzle.ColumnClues[cx].Length;
+                        if (clueIndex >= 0)
+                        {
+                            _puzzle.ColumnCluesStatus[cx][clueIndex] = _puzzle.ColumnCluesStatus[cx][clueIndex] switch
+                            {
+                                ClueStatus.Unmarked => ClueStatus.Marked,
+                                ClueStatus.Marked => ClueStatus.Unmarked,
+                                _ => _puzzle.ColumnCluesStatus[cx][clueIndex]
+                            };
+                        }
                     }
                     else
                     {
@@ -459,13 +497,13 @@ namespace GCross
                 }
             }
 
-            if (_selectedIndex.X < 0 || _selectedIndex.Y < 0) return;
+            if (cx < 0 || cy < 0) return;
             
             if (_buttonPressed)
             {
                 if (cellStatus != _clickAction)
                 {
-                    _puzzle.Grid[_selectedIndex.X, _selectedIndex.Y] = _clickAction;
+                    _puzzle.Grid[cx, cy] = _clickAction;
                 }
             }
         }

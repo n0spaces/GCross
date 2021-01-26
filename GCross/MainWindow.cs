@@ -13,8 +13,8 @@ namespace GCross
         private MainWindow(Builder builder) : base(builder.GetObject("MainWindow").Handle)
         {
             builder.Autoconnect(this);
-
-            DrawingArea puzzleArea = new PuzzleDrawingArea(Puzzle.LoadFromCsv(@"E:\Users\mschw\RiderProjects\GCross\GCross\pattern.csv"));
+            
+            DrawingArea puzzleArea = new PuzzleDrawingArea(Puzzle.LoadFromCsv("pattern.csv"));
             Add(puzzleArea);
             ShowAll();
 

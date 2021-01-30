@@ -1,7 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.38.1 -->
 <interface>
-  <requires lib="gtk+" version="3.18"/>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAboutDialog" id="_aboutDialog">
+    <property name="can-focus">False</property>
+    <property name="modal">True</property>
+    <property name="window-position">center-on-parent</property>
+    <property name="type-hint">dialog</property>
+    <property name="gravity">center</property>
+    <property name="program-name">GCross</property>
+    <property name="version">dev</property>
+    <property name="website">https://github.com/n0spaces</property>
+    <property name="website-label" translatable="yes">GitHub</property>
+    <property name="logo-icon-name">application-x-executable</property>
+    <property name="license-type">mit-x11</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="_aboutButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="_popoverMenu">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox" id="_menuBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="margin-start">3</property>
+        <property name="margin-end">3</property>
+        <property name="margin-top">3</property>
+        <property name="margin-bottom">3</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">1</property>
+        <child>
+          <object class="GtkModelButton" id="_btnOpen">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="text" translatable="yes">Open</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSeparator">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="_btnAbout">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="text" translatable="yes">About</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkWindow" id="MainWindow">
     <property name="can-focus">False</property>
     <property name="default-width">480</property>
@@ -15,7 +98,26 @@
         <property name="can-focus">False</property>
         <property name="title" translatable="yes">GCross</property>
         <property name="show-close-button">True</property>
+        <child>
+          <object class="GtkMenuButton">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="direction">none</property>
+            <property name="popover">_popoverMenu</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
+  </object>
+  <object class="GtkFileChooserNative" id="_fileChooserNative">
+    <property name="title">Select a puzzle file to open</property>
+    <property name="modal">True</property>
+    <property name="transient-for">MainWindow</property>
+    <property name="accept-label">Open</property>
+    <property name="cancel-label">Cancel</property>
   </object>
 </interface>

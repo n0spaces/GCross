@@ -13,9 +13,6 @@
         <EmbeddedResource Update="MainWindow.glade">
           <LogicalName>MainWindow.glade</LogicalName>
         </EmbeddedResource>
-        <None Update="pattern.csv">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
